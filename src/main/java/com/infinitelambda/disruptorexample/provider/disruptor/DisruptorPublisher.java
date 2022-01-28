@@ -1,7 +1,8 @@
-package com.infinitelambda.disruptorexample.disruptor;
+package com.infinitelambda.disruptorexample.provider.disruptor;
 
 import com.infinitelambda.disruptorexample.event.LongEvent;
 import com.infinitelambda.disruptorexample.handler.LongEventHandler;
+import com.infinitelambda.disruptorexample.provider.Publisher;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.util.DaemonThreadFactory;
@@ -15,7 +16,7 @@ import java.nio.ByteBuffer;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DisruptorProvider {
+public class DisruptorPublisher implements Publisher {
     private final Disruptor<LongEvent> disruptor = new Disruptor<>(LongEvent::new, 1024, DaemonThreadFactory.INSTANCE);
     private final LongEventHandler longEventHandler;
 
@@ -25,6 +26,7 @@ public class DisruptorProvider {
         disruptor.start();
     }
 
+    @Override
     public void publish(long l) {
         RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
         ByteBuffer bb = ByteBuffer.allocate(8);
