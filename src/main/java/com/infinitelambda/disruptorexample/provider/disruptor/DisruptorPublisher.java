@@ -19,6 +19,8 @@ import java.nio.ByteBuffer;
 public class DisruptorPublisher implements Publisher {
     private final Disruptor<LongEvent> disruptor = new Disruptor<>(LongEvent::new, 1024, DaemonThreadFactory.INSTANCE);
     private final LongEventHandler longEventHandler;
+    private final ByteBuffer bb = ByteBuffer.allocate(8);
+
 
     @PostConstruct
     private void setup() {
@@ -29,7 +31,6 @@ public class DisruptorPublisher implements Publisher {
     @Override
     public void publish(long l) {
         RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
-        ByteBuffer bb = ByteBuffer.allocate(8);
         bb.putLong(0, l);
         ringBuffer.publishEvent((event, sequence, buffer) -> event.setValue(buffer.getLong(0)), bb);
     }
