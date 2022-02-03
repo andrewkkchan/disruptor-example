@@ -3,8 +3,10 @@ package com.infinitelambda.disruptorexample.provider.disruptor;
 import com.infinitelambda.disruptorexample.event.LongEvent;
 import com.infinitelambda.disruptorexample.handler.LongEventHandler;
 import com.infinitelambda.disruptorexample.provider.Publisher;
+import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +19,8 @@ import java.nio.ByteBuffer;
 @RequiredArgsConstructor
 @Slf4j
 public class DisruptorPublisher implements Publisher {
-    private final Disruptor<LongEvent> disruptor = new Disruptor<>(LongEvent::new, 1024, DaemonThreadFactory.INSTANCE);
+    private final Disruptor<LongEvent> disruptor = new Disruptor<>(LongEvent::new, 1024,
+            DaemonThreadFactory.INSTANCE, ProducerType.MULTI, new BlockingWaitStrategy());
     private final LongEventHandler longEventHandler;
     private final ByteBuffer bb = ByteBuffer.allocate(8);
 
